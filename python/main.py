@@ -840,7 +840,7 @@ class Microphone():
         #for each audio device, add to list of devices
         for i in range(0,self.numdevices):
             device_info = py_audio.get_device_info_by_host_api_device_index(0,i)
-            if device_info["maxInputChannels"] > 1:
+            if device_info["maxInputChannels"] >= 1:
                 self.devices.append(device_info)
 
         if not "MIC_ID" in config.settings["mic_config"]:
@@ -876,8 +876,9 @@ class Microphone():
         # prev_ovf_time = time.time()
         while True:
             try:
-                y = np.fromstring(self.stream.read(self.frames_per_buffer), dtype=np.int16)
+                y = np.frombuffer(self.stream.read(self.frames_per_buffer, exception_on_overflow=False), dtype=np.int16)
                 y = y.astype(np.float32)
+                self.stream.read(self.stream.get_read_available(), exception_on_overflow=False)
                 self.callback_func(y)
             except IOError:
                 pass
