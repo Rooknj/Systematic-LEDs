@@ -838,9 +838,9 @@ class Microphone():
         self.devices = []
 
         #for each audio device, add to list of devices
-        for i in range(0,self.numdevices):
-            device_info = py_audio.get_device_info_by_host_api_device_index(0,i)
-            if device_info["maxInputChannels"] >= 1:
+        for i in range(self.numdevices):
+            device_info = py_audio.get_device_info_by_index(i)
+            if device_info["maxInputChannels"] > 0:
                 self.devices.append(device_info)
 
         if not "MIC_ID" in config.settings["mic_config"]:
